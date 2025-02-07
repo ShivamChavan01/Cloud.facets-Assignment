@@ -297,6 +297,10 @@ curl http://localhost:8080/green
 
 This guide walks you through both manual and Terraform-based deployment of a Blue-Green deployment using Kubernetes and Nginx Ingress. Let me know if you have any questions! 🚀
 
+
+### For detailed Terraform explanation, see this [Notion Page](https://basalt-floss-edc.notion.site/Detailed-Explanation-of-Terraform-Deployment-and-Manual-Deployment-Process-1939055befce803b83c1c4f856253cc2)
+
+
 ## Screenshots
 
 ### Screenshot 1
