@@ -225,9 +225,8 @@ Import a Kubernetes dashboard:
 2. Use dashboard ID **3119** (Kubernetes Cluster Monitoring) or any preferred dashboard.
 3. Select **Prometheus** as the data source and click **Import**.
 
-## Terraform Deployment
+![image](https://github.com/user-attachments/assets/b33fb9a5-1f0b-4702-bc75-40f981b19b1e)
 
-(Same as before, Terraform steps remain unchanged)
 
 ## Conclusion
 
@@ -236,13 +235,6 @@ This guide walks you through both manual and Terraform-based deployment of a Blu
 ### For detailed Terraform explanation, see this [Notion Page](https://basalt-floss-edc.notion.site/Detailed-Explanation-of-Terraform-Deployment-and-Manual-Deployment-Process-1939055befce803b83c1c4f856253cc2)
 
 
-
-## Conclusion
-
-This guide walks you through both manual and Terraform-based deployment of a Blue-Green deployment using Kubernetes and Nginx Ingress. Let me know if you have any questions! 🚀
-
-
-### For detailed Terraform explanation, see this [Notion Page](https://basalt-floss-edc.notion.site/Detailed-Explanation-of-Terraform-Deployment-and-Manual-Deployment-Process-1939055befce803b83c1c4f856253cc2)
 
 
 ## Screenshots
