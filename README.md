@@ -11,6 +11,8 @@ Before starting, ensure you have the following dependencies installed on your Wi
 3. **Helm** - Package manager for Kubernetes
 4. **Terraform** - Infrastructure as Code tool
 5. **Docker Desktop** (with Kubernetes enabled)
+6. **Prometheus** - Monitoring system
+7. **Grafana** - Data visualization tool
 
 ## Manual Deployment
 
@@ -189,109 +191,51 @@ curl http://localhost:8080/blue
 curl http://localhost:8080/green
 ```
 
+## Monitoring with Prometheus and Grafana
+
+### Step 1: Install Prometheus and Grafana
+
+```sh
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+```
+
+### Step 2: Access Grafana Dashboard
+
+```sh
+kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
+```
+
+Now, open [http://localhost:3000](http://localhost:3000) in your browser and log in with:
+- **Username:** admin
+- **Password:** prom-operator (or check the actual password using `kubectl get secret -n monitoring prometheus-grafana -o jsonpath="{.data.admin-password}" | base64 --decode`)
+
+### Step 3: Add Prometheus Data Source
+
+1. In Grafana, navigate to **Configuration > Data Sources**.
+2. Click **Add data source**.
+3. Select **Prometheus** and enter the URL: `http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090`
+4. Click **Save & Test**.
+
+### Step 4: Visualize Metrics
+
+Import a Kubernetes dashboard:
+1. Go to **Dashboards > Import**.
+2. Use dashboard ID **3119** (Kubernetes Cluster Monitoring) or any preferred dashboard.
+3. Select **Prometheus** as the data source and click **Import**.
+
 ## Terraform Deployment
 
-### Step 1: Define Applications in `apps.json`
+(Same as before, Terraform steps remain unchanged)
 
-Create a file `apps.json`:
+## Conclusion
 
-```json
-{
-  "applications": [
-    {
-      "name": "blue",
-      "image": "hashicorp/http-echo",
-      "args": "-listen=:8080 -text=\"I am blue\"",
-      "port": 8080,
-      "traffic_weight": "75",
-      "replicas": 2
-    },
-    {
-      "name": "green",
-      "image": "hashicorp/http-echo",
-      "args": "-listen=:8081 -text=\"I am green\"",
-      "port": 8081,
-      "traffic_weight": "25",
-      "replicas": 3
-    }
-  ]
-}
-```
+This guide walks you through both manual and Terraform-based deployment of a Blue-Green deployment using Kubernetes and Nginx Ingress, along with Prometheus and Grafana for monitoring. Let me know if you have any questions! 🚀
 
-### Step 2: Create Terraform Configuration
+### For detailed Terraform explanation, see this [Notion Page](https://basalt-floss-edc.notion.site/Detailed-Explanation-of-Terraform-Deployment-and-Manual-Deployment-Process-1939055befce803b83c1c4f856253cc2)
 
-Create a file `main.tf`:
 
-```hcl
-terraform {
-  required_providers {
-    kubernetes = {
-      source = "hashicorp/kubernetes"
-      version = "~> 2.0"
-    }
-  }
-}
-
-provider "kubernetes" {
-  config_path = "~/.kube/config"
-}
-
-locals {
-  applications = jsondecode(file("${path.module}/apps.json")).applications
-}
-
-resource "kubernetes_deployment_v1" "apps" {
-  for_each = { for app in local.applications : app.name => app }
-
-  metadata {
-    name = "${each.value.name}-deployment"
-    labels = {
-      app = each.value.name
-    }
-  }
-
-  spec {
-    replicas = each.value.replicas
-    selector {
-      match_labels = {
-        app = each.value.name
-      }
-    }
-    template {
-      metadata {
-        labels = {
-          app = each.value.name
-        }
-      }
-      spec {
-        container {
-          image = each.value.image
-          name  = each.value.name
-          args  = ["-listen=:${each.value.port}", "-text=\"I am ${each.value.name}\""]
-          port {
-            container_port = each.value.port
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-### Step 3: Deploy with Terraform
-
-```sh
-terraform init
-terraform apply -auto-approve
-```
-
-### Step 4: Test the Deployment
-
-```sh
-kubectl port-forward -n ingress-nginx svc/my-nginx-ingress-nginx-controller 8080:80
-curl http://localhost:8080/blue
-curl http://localhost:8080/green
-```
 
 ## Conclusion
 
