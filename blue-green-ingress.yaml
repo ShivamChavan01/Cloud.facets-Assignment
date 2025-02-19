@@ -5,7 +5,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  ingressClassName: nginx # ✅ Correct way to define Ingress Class
+  ingressClassName: nginx 
   rules:
     - host: blue-green.local
       http:
@@ -28,7 +28,7 @@ metadata:
     nginx.ingress.kubernetes.io/canary: "true"
     nginx.ingress.kubernetes.io/canary-weight: "75"
 spec:
-  ingressClassName: nginx # ✅ Required to make it work
+  ingressClassName: nginx 
   rules:
     - host: blue-green.local
       http:
